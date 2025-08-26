@@ -3,7 +3,7 @@
 const mochiFile = require('./commands/mochi.js');
 
 // discord.jsライブラリの中から必要な設定を呼び出し、変数に保存します
-const { Client, Events, GatewayIntentBits,  ChannelType } = require('discord.js');
+const { Client, Events, GatewayIntentBits,  ChannelType, Partials } = require('discord.js');
 // 設定ファイルからトークン情報を呼び出し、変数に保存します
 const { token, notificationChannelId, targetVoiceChannelId } = require('./config.json');
 // クライアントインスタンスと呼ばれるオブジェクトを作成します
@@ -12,10 +12,12 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages, // サーバーでのメッセージに関する情報を受け取る許可
     GatewayIntentBits.MessageContent, // メッセージの"内容"を読み取る許可
-    GatewayIntentBits.GuildVoiceStates // ボイスチャンネルの状態を監視する許可
-  ]
+    GatewayIntentBits.GuildVoiceStates, // ボイスチャンネルの状態を監視する許可
+    GatewayIntentBits.DirectMessages, // ダイレクトメッセージの受信を許可
+    GatewayIntentBits.DirectMessageReactions // ダイレクトメッセージのリアクションを受信する許可
+  ],
+  partials: [Partials.Channel], // ← これを追加したらなぜかDMのメッセージが取得できるようになった
 });
-
 // クライアントオブジェクトが準備OKとなったとき一度だけ実行されます
 client.once(Events.ClientReady, c => {
 	console.log(`フ～ン！(準備ok! ${c.user.tag}がログインします。)`);
@@ -47,22 +49,43 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 // メッセージが作成されるたびに実行される
-client.on('messageCreate', msg => {
+client.on('messageCreate', async msg => {
   // ボット自身のメッセージは無視する
-  if (msg.author.bot) {
-    return;
-  }
+    if (msg.author.bot) {
+        return;
+    }
 
-  // メッセージの内容が 'ping' だったら 'Pong!' と返信する
-  if (msg.content === 'エル') {
-    msg.reply('フーン！');
-  }
+    
+    try{
+        if ( msg.guild ){
+            // メッセージの内容が 'エル' だったら 'フーン' と返信する
+            if (msg.content === `エル`) {
+                await msg.reply(`フーン！`);
+            }
+            if (msg.content === `エルエルエル`) {
+                await msg.reply(`フ～～～ン！`);
+            }
+        }else{
+            console.log(`フーン！(DMでメッセージを受信しました。->${msg.content}\n送信者: ${msg.author.tag})`);
+            
+            if (msg.content.includes(`エル`)) {
+                await msg.reply(`フーン！`);
+            }
+            if (msg.content.includes(`かわいい`)) {
+                await msg.reply(`:pink_heart:`);
+            }
+            else if (msg.content === `もちもち`) {
+                await msg.reply(`フーン？`);
+            }else{
+                await msg.reply(`……？`);
+            }
+        }
+    }catch(error){
+        console.error(`メッセージの処理中にエラーが発生しました: ${error}`);
+        await msg.reply(`フ～～～ン:sob:(エラーが発生しました。何回も表示される場合は開発者までご連絡ください。)`);
+    }
 });
 
-// ボイスチャンネルの状態が変化したときに実行される
-client.once('ready', () => {
-    console.log(`${client.user.tag} がログインしました！`);
-});
 
 client.on('voiceStateUpdate', (oldState, newState) => {
     if (!notificationChannelId || !targetVoiceChannelId) {
@@ -81,16 +104,21 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     // 通話開始 (0人 → 1人になった時)
     if (newChannel?.id === targetVoiceChannelId && newChannel.members.size === 1 && oldChannel?.id !== targetVoiceChannelId) {
         const member = newState.member;
-        const message = `フーン！(📞 **<#${newChannel.id}>** で通話が開始されました！ (参加者: ${member.displayName}))`;
-        notificationChannel.send(message);
+        const msg = `フーン！(📞 **<#${newChannel.id}>** で通話が開始されました！ (参加者: ${member.displayName}))`;
+        notificationChannel.send(msg);
     }
 
     // 通話終了 (1人 → 0人になった時)
     if (oldChannel?.id === targetVoiceChannelId && oldChannel.members.size === 0 && newChannel?.id !== targetVoiceChannelId) {
-        const message = `フーン！(🌙 **<#${oldChannel.id}>** の通話が終了しました。)`;
-        notificationChannel.send(message);
+        const msg = `フーン！(🌙 **<#${oldChannel.id}>** の通話が終了しました。)`;
+        notificationChannel.send(msg);
     }
 });
+
+// client.on( 'messeageCreate', async message => {
+//     if (message.author.bot) return;
+
+// )
 
 // ログインします
 client.login(token);
