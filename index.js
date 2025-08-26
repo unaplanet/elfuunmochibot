@@ -71,6 +71,9 @@ client.on('messageCreate', async msg => {
             if (msg.content.includes(`エル`)) {
                 await msg.reply(`フーン！`);
             }
+            if (msg.content.includes(`かわいい`)) {
+                await msg.reply(`:pink_heart:`);
+            }
             else if (msg.content === `もちもち`) {
                 await msg.reply(`フーン？`);
             }else{
