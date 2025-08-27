@@ -65,7 +65,7 @@ client.on('messageCreate', async msg => {
             if (msg.content === `エルエルエル`) {
                 await msg.reply(`フ～～～ン！`);
             }else if (msg.content.includes(`かわいい`)) {
-                await msg.reply(`:smirk_cat:(しってる)`);
+                await msg.reply(`:sunglasses:(ふふん)`);
             }
         }else{
             console.log(`フーン！(DMでメッセージを受信しました。->${msg.content}\n送信者: ${msg.author.tag})\n受信日時:${msg.createdAt}`);
