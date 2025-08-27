@@ -60,13 +60,15 @@ client.on('messageCreate', async msg => {
         if ( msg.guild ){
             // メッセージの内容が 'エル' だったら 'フーン' と返信する
             if (msg.content === `エル`) {
-                await msg.reply(`フーン！`);
+                await msg.reply(`フーン:smirk_cat:`);
             }
             if (msg.content === `エルエルエル`) {
                 await msg.reply(`フ～～～ン！`);
+            }else if (msg.content.includes(`かわいい`)) {
+                await msg.reply(`:smirk_cat:(しってる)`);
             }
         }else{
-            console.log(`フーン！(DMでメッセージを受信しました。->${msg.content}\n送信者: ${msg.author.tag})`);
+            console.log(`フーン！(DMでメッセージを受信しました。->${msg.content}\n送信者: ${msg.author.tag})\n受信日時:${msg.createdAt}`);
             
             if (msg.content.includes(`エル`)) {
                 await msg.reply(`フーン！`);
