@@ -8,7 +8,7 @@ const mochiFile = require('./commands/mochi.js');
 const { applicationId, guildId, token } = require('./config.json');
 
 // 登録コマンドを呼び出してリスト形式で登録
-const commands = [mochiFile.data.toJSON()];
+const commands = [mochiFile.data.toJSON(), lfgFile.data.toJSON()];
 
 // DiscordのAPIには現在最新のversion10を指定
 const rest = new REST({ version: '10' }).setToken(token);

@@ -1,2 +1,3 @@
-config.json
+config.ts
+deploy-commands.js
 node_modules/
