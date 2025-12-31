@@ -6,7 +6,7 @@ import lfgFile from './commands/lfg.ts';
 // discord.tsライブラリの中から必要な設定を呼び出し、変数に保存します
 import { Client, Events, GatewayIntentBits, ChannelType, Partials, REST, Routes } from 'discord.js';
 // 設定ファイルからトークン情報を呼び出し、変数に保存します
-import { token, notificationChannelId, targetVoiceChannelId } from './config.ts';
+import { token, notificationChannelId, targetVoiceChannelId, id_and_message, id } from './config.ts';
 
 const commands = [mochiFile, lfgFile];
 
@@ -68,7 +68,7 @@ client.on('messageCreate', async msg => {
                 await msg.reply(`:sunglasses:(ふふん)`);
             }
         } else {
-            // console.log(`フーン！(DMでメッセージを受信しました。->${msg.content}\n送信者: ${msg.author.tag})\n受信日時:${msg.createdAt}`);
+            console.log(`フーン！(DMでメッセージを受信しました。->${msg.content}\n送信者: ${msg.author.tag})\n受信日時:${msg.createdAt}`);
 
             if (msg.content.includes(`エル`)) {
                 await msg.reply(`フーン！`);
@@ -78,6 +78,11 @@ client.on('messageCreate', async msg => {
             }
             else if (msg.content === `もちもち`) {
                 await msg.reply(`フーン？`);
+            }else if (msg.content === `年賀送信` && msg.author.id === id ){
+                for ( const [id, message] of id_and_message ){
+                    (await client.users.fetch(id)).send(message);
+                }
+
             } else {
                 await msg.reply(`……？`);
             }
